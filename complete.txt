@@ -1,0 +1,291 @@
+The SOLID Principles
+
+	
+The SOLID principles provide five guidelines in object oriented programming that, when followed, can dramatically enhance the maintainability of software.
+
+When working with software in which dependency management is handled badly, the code can become rigid, fragile and difficult to reuse. Rigid code is that which is difficult to modify, either to change existing functionality or add new features.
+
+If you follow the SOLID principles, you can produce code that is more flexible and robust, and that has a higher possibility for reuse.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1) Single Responsibility Principle
+	
+	The Single Responsibility Principle (SRP) states that there should never be more than one reason for a class to change. This means that you should design your classes so that each has a single purpose. This does not mean that each class should have only one method but that all of the members in the class are related to the class's primary function. Where a class has multiple responsibilities, these should be separated into new classes.
+	
+	When a class has multiple responsibilities, the likelihood that it will need to be changed increases. Each time a class is modified the risk of introducing bugs grows. By concentrating on a single responsibility, this risk is limited.
+
+	By way of counter-example, consider a class that opens a connection to the database, pulls out some table data, and writes the data to a file. 
+
+Bad Example:
+
+class SaveCustomerData
+    {
+        public function Connect()
+        {
+           // Logic for Database connection goes here
+        }
+
+ public function FetchData()
+        {
+           // Logic for Fetching Data goes here
+        }
+ public function WriteDataToFile()
+        {
+           // Logic for Writing Data into File goes here
+        }
+    }
+
+
+This class has multiple reasons to change: adoption of a new database, modified file output format, deciding to use an ORM, etc.  In terms of the SRP, we'd say that this class is doing too much.
+
+
+
+
+
+
+
+
+2) Open/Closed Principle.
+
+	The Open / Closed Principle (OCP) specifies that software entities (classes, modules, functions, etc.) should be open for extension but closed for modification. The "closed" part of the rule states that once a module has been developed and tested, the code should only be adjusted to correct bugs. The "open" part says that you should be able to extend existing code in order to introduce new functionality.
+
+	To put this more concretely, you should write a class that does what it needs to flawlessly and not assuming that people should come in and change it later. It's closed for modification, but it can be extended by, for instance, inheriting from it and overriding or extending certain behaviors. 
+
+	A great example of this in real life is sitting in your pocket in the form of a smartphone. All such phones have app stores and these app stores let you extend the base functionality of the phone. Sure, it ships with the basics: camera operation, actual calls, text messages, etc. But via the app store, you can extend the phone's capabilities to allow you to manage your todo list, play inane video games, and even serve as a flashlight or wireless access point.
+
+Another Example Would Be.
+
+Here in the Customer class I have added a simple customer type property to the class. This property decides if this is a “Gold” or a “Silver” customer.
+
+Depending on the same it calculates discount. Have a look at the “getDiscount” function which returns discount accordingly. 1 for Gold customer and 2 for Silver customer.
+
+class Customer
+{
+    public $CustType;
+        public function getDiscount($TotalSales)
+        {
+                if ($CustType == 1)
+                {
+                    return $TotalSales - 100;
+                }
+                else
+                {
+                    return $TotalSales - 50;
+                }
+        }
+}
+
+The problem is if we add a new customer type we need to go and add one more “IF” condition in the “getDiscount” function, in other words we need to change the customer class.
+If we are changing the customer class again and again, we need to ensure that the previous conditions with new one’s are tested again , existing client’s which are referencing this class are working properly as before.
+
+In other words we are “MODIFYING” the current customer code for every change and every time we modify we need to ensure that all the previous functionalities and connected client are working as before.
+
+How about rather than “MODIFYING” we go for “EXTENSION”. In other words every time a new customer type needs to be added we create a new class as shown below. So whatever is the current code they are untouched and we just need to test and check the new classes.
+
+
+class Customer
+{
+        public function getDiscount($TotalSales)
+        {
+            return $TotalSales;
+        }
+}
+
+class SilverCustomer extends Customer
+{
+        public function getDiscount($TotalSales)
+        {
+            return parent::getDiscount($TotalSales) - 50;
+        }
+}
+
+class GoldCustomer extends Customer
+    {
+        public function getDiscount($TotalSales)
+        {
+            return parent::getDiscount($TotalSales) - 100;
+        }
+    }
+
+
+Putting in simple words the “Customer” class is now closed for any new modification but it’s open for extensions when new customer types are added to the project.
+
+
+
+
+3) Liskov Substitution Principle.
+
+	The Liskov Substitution Principle (LSP) is the one here that is most unique to object-oriented programming. The LSP says, basically, that any child type of a parent type should be able to stand in for that parent without things blowing up.
+
+	In other words, if you have a class, Animal, with a MakeNoise() method, then any subclass of Animal should reasonably implement MakeNoise(). Cats should meow, dogs should bark, etc. What you wouldn't do is define a MuteMouse class that throws IDontActuallyMakeNoiseException. This violates the LSP, and the argument would be that this class has no business inheriting from Animal.
+
+Another example of Birds would be.
+
+Bad example:
+
+class Bird
+{
+        public function  Fly()
+        {
+            Return “I can Fly”;
+        }
+}
+
+class Parrot extends Bird{}
+
+class Ostrich extends Bird{}
+
+Ostrich is a bird, but it can't fly, Ostrich class is a subtype of class Bird, but it can't use the fly method, it means that we are breaking Liskov Substitution Principle.
+
+Good example:
+
+class Bird{}
+
+class FlyingBirds extends Bird
+{
+        public function  Fly()
+        {
+            Return “I can Fly”;
+        }
+}
+
+class Parrot extends FlyingBirds{}
+
+class Ostrich extends Bird{}
+4) Interface Segregation Principle.
+
+	The Interface Segregation Principle (ISP) says that you should favor many, smaller, client-specific interfaces over one larger, more monolithic interface. In short, you don't want to force clients to depend on things they don't actually need. Imagine your code consuming some big, fat interface and having to re-compile/deploy with annoying frequency because some method you don't even care about got a new signature.
+
+	When you follow the ISP, large classes implement multiple smaller interfaces that group functions according to their usage. The dependents are linked to these for looser coupling, increasing robustness, flexibility and the possibility of reuse.
+
+Bad Example:
+
+interface RestaurantInterface
+{
+        public function  acceptOnlineOrder();
+        public function  takeTelephoneOrder();
+        public function  payOnline();
+        public function  walkInCustomerOrder();
+        public function  payInPerson();
+
+}
+
+class OnlineClient implements RestaurantInterface
+{
+        public function  acceptOnlineOrder()
+        {
+            //logic for placing online order
+        }
+
+        public function  payOnline()
+        {
+            //logic for paying online 
+        }
+}
+
+Since the above code is for online orders, the methods for telephonic order placement, walk-in order placement and in-person payment are not applicable for online order.
+
+To overcome the above mentioned problem with restaurant design, we apply Interface Segregation Principle to refactor the above design and break the interface into multiple interfaces. 
+
+
+5) Dependency Inversion Principle.
+
+	The Dependency Inversion Principle (DIP) encourages you to write code that depends upon abstractions rather than upon concrete details. You can recognize this in the code you read by looking for a class or method that takes something generic like "Stream" and performs operations on it, as opposed to instantiating a specific Filestream or Stringstream or whatever. This gives the code in question a lot more flexibility -- you can swap in anything that conforms to the Stream abstraction and it will still work.
+
+	To visualize this in your day to day, go down to your local store and pay for something with a credit card. The clerk doesn't examine your card and get out the "Visa Machine" after seeing that your card is a Visa. He just takes your card, whatever it is, and swipes it. Both you and the clerk depend on the credit card abstraction without worrying about specifics.
+
+
+Bad Example:
+
+An example that seems like the best way to explain this principle:
+
+class PasswordReminder
+{
+        private $dbConnection; 
+
+        public function __construct(MySQLConnection $dbConnection)
+        {
+            $this->dbConnection = $dbConnection;
+        }
+}
+
+First the MySQLConnection is the low level module while the PasswordReminder is high level, this snippet above violates this principle as the PasswordReminder class is being forced to depend on the MySQLConnection class.
+
+Later if you were to change the database engine, you would also have to edit the PasswordReminder class and thus violates Open-close principle.
+
+The PasswordReminder class should not care what database your application uses, to fix this again we "code to an interface", since high level and low level modules should depend on abstraction, we can create an interface:
+
+
+
+
+
+Good Example:
+
+interface DBConnectionInterface
+{
+        public function  connect();
+}
+
+class MySQLConnection implements DBConnectionInterface
+{
+        public function  connect()
+        {
+            return "Database connection";
+        }
+}
+
+class PasswordReminder
+{
+        private $dbConnection; 
+
+        public function __construct(DBConnectionInterface $dbConnection)
+        {
+            $this->dbConnection = $dbConnection;
+        }
+}
+
+According to the little snippet above, you can now see that both the high level and low level modules depend on abstraction.
+
+
+
+
+
+
+
+
+
+
+
+Reference URL’s:
+https://dzone.com/articles/the-solid-principles-in-real-life
+http://www.blackwasp.co.uk/SOLID.aspx
+https://scotch.io/bar-talk/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
+
+
