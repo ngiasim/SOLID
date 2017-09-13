@@ -1,2 +1,2 @@
 # SOLID
-The SOLID principles
+Examples of SOLID principles in PHP
