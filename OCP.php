@@ -1,7 +1,7 @@
 <?php
 
 //Bad Example
-public class SavingAccount  
+class SavingAccount  
 {  
     public function CalculateInterest($accountType)  
     {  
@@ -18,12 +18,12 @@ public class SavingAccount
 
 
 // Good Example
-Interface ISavingAccount  
+interface ISavingAccount  
 {  
    public function CalculateInterest();  
 }  
 
-Public Class RegularSavingAccount implements ISavingAccount  
+class RegularSavingAccount implements ISavingAccount  
 {  
   public function CalculateInterest()  
   {  
@@ -33,7 +33,7 @@ Public Class RegularSavingAccount implements ISavingAccount
 
   
 
-Public Class SalarySavingAccount implements ISavingAccount  
+class SalarySavingAccount implements ISavingAccount  
 {  
   public function CalculateInterest()  
   {  
